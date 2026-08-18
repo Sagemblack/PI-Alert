@@ -23,6 +23,7 @@ local played = {}
 local notices = {}
 local messages = {}
 local optionsOpened = false
+local timerScheduled = false
 local frame = { events = {} }
 
 function frame:RegisterEvent(event)
@@ -71,6 +72,12 @@ function RaidNotice_AddMessage(_, message)
   table.insert(notices, message)
 end
 SlashCmdList = {}
+C_Timer = {
+  After = function(_, callback)
+    timerScheduled = true
+    callback()
+  end,
+}
 PIAlertDB = nil
 
 dofile("PIAlert/Core.lua")
@@ -155,6 +162,7 @@ test("options command opens the settings category when available", function()
     end,
   }
   SlashCmdList.PIALERT("options")
+  equal(timerScheduled, true)
   equal(optionsOpened, true)
 end)
 

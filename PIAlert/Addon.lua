@@ -78,6 +78,32 @@ local function ShowStatus()
   Print("enabled=" .. tostring(PIAlertDB.enabled) .. ", visual=" .. tostring(PIAlertDB.visual ~= false) .. ", sound=" .. sound .. ", channel=" .. PIAlertDB.channel)
 end
 
+local function OpenSettingsPanel()
+  local function open()
+    local opened = false
+    if PIAlertCore.OpenSettings then
+      opened = PIAlertCore.OpenSettings()
+    end
+    if opened == false and Settings and Settings.OpenToCategory then
+      if PIAlertCore.SettingsCategory then
+        opened = Settings.OpenToCategory(PIAlertCore.SettingsCategory)
+      else
+        opened = Settings.OpenToCategory("PIAlert")
+      end
+    end
+    if opened == false then
+      Print("Settings panel is unavailable until the WoW UI finishes loading.")
+    end
+  end
+
+  if C_Timer and C_Timer.After then
+    Print("Opening PI Alert settings...")
+    C_Timer.After(0, open)
+  else
+    open()
+  end
+end
+
 local function HandleSlashCommand(input)
   input = (input or ""):match("^%s*(.-)%s*$")
   local command, argument = input:match("^(%S+)%s*(.-)$")
@@ -135,20 +161,7 @@ local function HandleSlashCommand(input)
   elseif command == "status" then
     ShowStatus()
   elseif command == "options" then
-    local opened = false
-    if PIAlertCore.OpenSettings then
-      opened = PIAlertCore.OpenSettings()
-    end
-    if opened == false and Settings and Settings.OpenToCategory then
-      if PIAlertCore.SettingsCategory then
-        opened = Settings.OpenToCategory(PIAlertCore.SettingsCategory)
-      else
-        opened = Settings.OpenToCategory("PIAlert")
-      end
-    end
-    if opened == false then
-      Print("Settings panel is unavailable until the WoW UI finishes loading.")
-    end
+    OpenSettingsPanel()
   elseif command == "test" then
     PlaySelectedSound()
   else

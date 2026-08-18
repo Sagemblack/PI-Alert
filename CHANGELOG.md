@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3
+
+- Defer `/pialert options` until the chat command finishes processing, preventing the chat edit box from swallowing the command.
+- Add an explicit "Opening PI Alert settings..." confirmation.
+
 ## 0.2.2
 
 - Make `/pialert options` fall back to opening the registered Settings category object when the category ID is not accepted.
