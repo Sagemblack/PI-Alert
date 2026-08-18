@@ -137,6 +137,8 @@ local function HandleSlashCommand(input)
   elseif command == "options" then
     if PIAlertCore.OpenSettings then
       PIAlertCore.OpenSettings()
+    elseif Settings and Settings.OpenToCategory then
+      Settings.OpenToCategory("PIAlert")
     else
       Print("Settings panel is unavailable until the WoW UI finishes loading.")
     end

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Fix `/pialert options` to open the registered Settings category directly when needed.
+
 ## 0.2.0
 
 - Add an optional on-screen `POWER INFUSION` raid-warning alert.

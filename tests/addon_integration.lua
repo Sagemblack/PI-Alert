@@ -22,6 +22,7 @@ local auraActive = false
 local played = {}
 local notices = {}
 local messages = {}
+local optionsOpened = false
 local frame = { events = {} }
 
 function frame:RegisterEvent(event)
@@ -139,6 +140,18 @@ test("status reports the selected custom path", function()
   if not last:find("moan%.ogg") then
     error("status did not include the custom sound path")
   end
+end)
+
+test("options command opens the settings category when available", function()
+  PIAlertCore.OpenSettings = nil
+  Settings = {
+    OpenToCategory = function(categoryID)
+      equal(categoryID, "PIAlert", "settings category ID")
+      optionsOpened = true
+    end,
+  }
+  SlashCmdList.PIALERT("options")
+  equal(optionsOpened, true)
 end)
 
 io.write(string.format("\n%d integration tests, %d failures\n", tests, failures))
