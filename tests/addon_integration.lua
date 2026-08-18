@@ -144,10 +144,14 @@ end)
 
 test("options command opens the settings category when available", function()
   PIAlertCore.OpenSettings = nil
+  PIAlertCore.SettingsCategory = {}
   Settings = {
-    OpenToCategory = function(categoryID)
-      equal(categoryID, "PIAlert", "settings category ID")
-      optionsOpened = true
+    OpenToCategory = function(category)
+      if type(category) == "table" then
+        optionsOpened = true
+        return true
+      end
+      return false
     end,
   }
   SlashCmdList.PIALERT("options")

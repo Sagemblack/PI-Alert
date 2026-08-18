@@ -135,11 +135,18 @@ local function HandleSlashCommand(input)
   elseif command == "status" then
     ShowStatus()
   elseif command == "options" then
+    local opened = false
     if PIAlertCore.OpenSettings then
-      PIAlertCore.OpenSettings()
-    elseif Settings and Settings.OpenToCategory then
-      Settings.OpenToCategory("PIAlert")
-    else
+      opened = PIAlertCore.OpenSettings()
+    end
+    if opened == false and Settings and Settings.OpenToCategory then
+      if PIAlertCore.SettingsCategory then
+        opened = Settings.OpenToCategory(PIAlertCore.SettingsCategory)
+      else
+        opened = Settings.OpenToCategory("PIAlert")
+      end
+    end
+    if opened == false then
       Print("Settings panel is unavailable until the WoW UI finishes loading.")
     end
   elseif command == "test" then
@@ -225,8 +232,9 @@ local function CreateSettingsPanel()
   local category = Settings.RegisterCanvasLayoutCategory(panel, "PI Alert")
   category.ID = "PIAlert"
   Settings.RegisterAddOnCategory(category)
+  PIAlertCore.SettingsCategory = category
   PIAlertCore.OpenSettings = function()
-    Settings.OpenToCategory(category.ID)
+    return Settings.OpenToCategory(category.ID)
   end
 end
 
