@@ -17,6 +17,10 @@ PIAlertCore.Channels = {
   Music = true,
 }
 
+PIAlertCore.Presets = {
+  moan = "Interface\\AddOns\\WeakAuras\\PowerAurasMedia\\Sounds\\moan.ogg",
+}
+
 function PIAlertCore.NormalizeSettings(saved)
   saved = type(saved) == "table" and saved or {}
   local enabled = true
@@ -29,6 +33,7 @@ function PIAlertCore.NormalizeSettings(saved)
     sound = PIAlertCore.SoundKeys[saved.sound] and saved.sound or "raidwarning",
     channel = PIAlertCore.Channels[saved.channel] and saved.channel or "Master",
     customPath = type(saved.customPath) == "string" and saved.customPath or "",
+    visual = saved.visual ~= false,
   }
 end
 

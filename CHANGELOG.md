@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0
+
+- Add an optional on-screen `POWER INFUSION` raid-warning alert.
+- Add the WeakAuras `moan.ogg` preset.
+- Add `/pialert status`, `/pialert visual`, `/pialert preset`, and `/pialert options`.
+- Add a modern WoW Settings panel with enable, visual-alert, test-sound, and Moan preset controls.
+- Report a helpful diagnostic when WoW refuses to play a custom file.
+
 ## 0.1.0-beta.1
 
 - Detect Power Infusion gains on the player.

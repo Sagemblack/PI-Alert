@@ -9,6 +9,8 @@ PI Alert plays a selected sound once whenever your character gains the priest **
 - Five built-in World of Warcraft sounds
 - Custom `.ogg` or `.mp3` file paths
 - Selectable audio channel, with `Master` as the default
+- Optional large on-screen `POWER INFUSION` alert
+- Modern WoW Settings panel with test and WeakAuras Moan preset buttons
 - Lightweight and dependency-free
 
 ## Commands
@@ -24,6 +26,10 @@ PI Alert plays a selected sound once whenever your character gains the priest **
 | `/pialert sound tell` | Select Whisper notification |
 | `/pialert sound auction` | Select Auction House sound |
 | `/pialert channel Master` | Select an audio channel |
+| `/pialert preset moan` | Select WeakAuras' `moan.ogg` preset |
+| `/pialert visual on` / `off` | Toggle the on-screen alert |
+| `/pialert status` | Show current settings and path |
+| `/pialert options` | Open the graphical settings panel |
 | `/pialert test` | Preview the selected sound |
 
 Valid channels are `Master`, `SFX`, `Dialog`, `Ambience`, and `Music`.
@@ -39,6 +45,15 @@ WoW addons cannot open an operating-system file picker. Put your sound in anothe
 ```
 
 Keeping personal sounds in a separate addon prevents an updater from deleting them when PI Alert is upgraded.
+
+WeakAuras' bundled sound can be selected directly:
+
+```text
+/pialert preset moan
+/pialert test
+```
+
+If the sound file was added or updated while WoW was running, log out and back in (or reload after the file exists). WoW must discover addon sound files before playback.
 
 ## Installation
 

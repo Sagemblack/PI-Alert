@@ -1,6 +1,7 @@
 local addonName = ... or "PIAlert"
 local POWER_INFUSION_SPELL_ID = 10060
 local PREFIX = "|cff9b59ffPI Alert:|r "
+local MOAN_PRESET_PATH = PIAlertCore.Presets.moan
 
 local detector = PIAlertCore.NewDetector()
 local frame = CreateFrame("Frame")
@@ -27,7 +28,11 @@ local function PlaySelectedSound()
       Print("No custom sound path is configured.")
       return false
     end
-    return PlaySoundFile(PIAlertDB.customPath, PIAlertDB.channel)
+    local willPlay = PlaySoundFile(PIAlertDB.customPath, PIAlertDB.channel)
+    if not willPlay then
+      Print("WoW could not play the custom sound. Reload after the file exists, then check the path: " .. PIAlertDB.customPath)
+    end
+    return willPlay
   end
 
   local getSoundKit = soundKits[PIAlertDB.sound]
@@ -39,12 +44,19 @@ local function PlaySelectedSound()
   return PlaySound(soundKitID, PIAlertDB.channel)
 end
 
+local function ShowVisualAlert()
+  if PIAlertDB.visual ~= false and RaidNotice_AddMessage and RaidWarningFrame then
+    RaidNotice_AddMessage(RaidWarningFrame, "POWER INFUSION", ChatTypeInfo.RAID_WARNING)
+  end
+end
+
 local function HasPowerInfusion()
   return C_UnitAuras.GetPlayerAuraBySpellID(POWER_INFUSION_SPELL_ID) ~= nil
 end
 
 local function ScanPlayerAuras()
   if detector:Update(HasPowerInfusion()) then
+    ShowVisualAlert()
     PlaySelectedSound()
   end
 end
@@ -54,7 +66,16 @@ local function ShowHelp()
   Print("/pialert sound raidwarning|readycheck|alarm|tell|auction|custom")
   Print("/pialert channel Master|SFX|Dialog|Ambience|Music")
   Print("/pialert custom Interface\\AddOns\\YourMedia\\sound.ogg")
+  Print("/pialert preset moan — use WeakAuras' moan.ogg")
+  Print("/pialert visual on|off — toggle the on-screen alert")
+  Print("/pialert status — show current settings")
+  Print("/pialert options — open the settings panel")
   Print("/pialert test — preview the selected sound")
+end
+
+local function ShowStatus()
+  local sound = PIAlertDB.sound == "custom" and (PIAlertDB.customPath ~= "" and PIAlertDB.customPath or "(no custom path)") or PIAlertDB.sound
+  Print("enabled=" .. tostring(PIAlertDB.enabled) .. ", visual=" .. tostring(PIAlertDB.visual ~= false) .. ", sound=" .. sound .. ", channel=" .. PIAlertDB.channel)
 end
 
 local function HandleSlashCommand(input)
@@ -96,6 +117,29 @@ local function HandleSlashCommand(input)
       PIAlertDB.customPath = argument
       Print("custom sound path saved. Select it with /pialert sound custom")
     end
+  elseif command == "preset" then
+    if argument == "moan" then
+      PIAlertDB.customPath = MOAN_PRESET_PATH
+      PIAlertDB.sound = "custom"
+      Print("WeakAuras moan preset selected. Reload WoW if the sound was added while logged in.")
+    else
+      Print("unknown preset: " .. argument)
+    end
+  elseif command == "visual" then
+    if argument == "on" or argument == "off" then
+      PIAlertDB.visual = argument == "on"
+      Print("visual alert " .. argument .. ".")
+    else
+      Print("visual alert is " .. (PIAlertDB.visual ~= false and "on" or "off") .. ". Use /pialert visual on|off")
+    end
+  elseif command == "status" then
+    ShowStatus()
+  elseif command == "options" then
+    if PIAlertCore.OpenSettings then
+      PIAlertCore.OpenSettings()
+    else
+      Print("Settings panel is unavailable until the WoW UI finishes loading.")
+    end
   elseif command == "test" then
     PlaySelectedSound()
   else
@@ -128,3 +172,60 @@ end)
 SLASH_PIALERT1 = "/pialert"
 SLASH_PIALERT2 = "/pia"
 SlashCmdList.PIALERT = HandleSlashCommand
+
+local function CreateSettingsPanel()
+  if not Settings or not Settings.RegisterCanvasLayoutCategory then
+    return
+  end
+
+  local panel = CreateFrame("Frame")
+  panel.name = "PI Alert"
+
+  local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+  title:SetPoint("TOPLEFT", 16, -16)
+  title:SetText("PI Alert")
+
+  local description = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+  description:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
+  description:SetText("Power Infusion sound and visual alert settings")
+
+  local enabled = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
+  enabled:SetPoint("TOPLEFT", description, "BOTTOMLEFT", 0, -18)
+  enabled.Text:SetText("Enable PI Alert")
+  enabled:SetScript("OnClick", function(self)
+    SlashCmdList.PIALERT(self:GetChecked() and "on" or "off")
+  end)
+
+  local visual = CreateFrame("CheckButton", nil, panel, "InterfaceOptionsCheckButtonTemplate")
+  visual:SetPoint("TOPLEFT", enabled, "BOTTOMLEFT", 0, -8)
+  visual.Text:SetText("Show POWER INFUSION on-screen alert")
+  visual:SetScript("OnClick", function(self)
+    SlashCmdList.PIALERT(self:GetChecked() and "visual on" or "visual off")
+  end)
+
+  local testButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+  testButton:SetPoint("TOPLEFT", visual, "BOTTOMLEFT", 0, -18)
+  testButton:SetSize(140, 24)
+  testButton:SetText("Test Sound")
+  testButton:SetScript("OnClick", function() SlashCmdList.PIALERT("test") end)
+
+  local presetButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+  presetButton:SetPoint("LEFT", testButton, "RIGHT", 10, 0)
+  presetButton:SetSize(180, 24)
+  presetButton:SetText("Use WeakAuras Moan")
+  presetButton:SetScript("OnClick", function() SlashCmdList.PIALERT("preset moan") end)
+
+  panel:SetScript("OnShow", function()
+    enabled:SetChecked(PIAlertDB and PIAlertDB.enabled == true)
+    visual:SetChecked(PIAlertDB and PIAlertDB.visual ~= false)
+  end)
+
+  local category = Settings.RegisterCanvasLayoutCategory(panel, "PI Alert")
+  category.ID = "PIAlert"
+  Settings.RegisterAddOnCategory(category)
+  PIAlertCore.OpenSettings = function()
+    Settings.OpenToCategory(category.ID)
+  end
+end
+
+CreateSettingsPanel()

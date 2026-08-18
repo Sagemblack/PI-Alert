@@ -2,7 +2,7 @@
 ## Title: PI Alert
 ## Notes: Plays your chosen sound when you gain Power Infusion.
 ## Author: Sagemblack
-## Version: 0.1.0-beta.1
+## Version: 0.2.0
 ## SavedVariables: PIAlertDB
 ## IconTexture: 135939
 

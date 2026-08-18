@@ -20,6 +20,8 @@ end
 
 local auraActive = false
 local played = {}
+local notices = {}
+local messages = {}
 local frame = { events = {} }
 
 function frame:RegisterEvent(event)
@@ -61,7 +63,12 @@ function PlaySoundFile(path, channel)
   return true
 end
 
-DEFAULT_CHAT_FRAME = { AddMessage = function() end }
+DEFAULT_CHAT_FRAME = { AddMessage = function(_, message) table.insert(messages, message) end }
+RaidWarningFrame = {}
+ChatTypeInfo = { RAID_WARNING = {} }
+function RaidNotice_AddMessage(_, message)
+  table.insert(notices, message)
+end
 SlashCmdList = {}
 PIAlertDB = nil
 
@@ -106,6 +113,32 @@ test("custom sound path uses PlaySoundFile", function()
   SlashCmdList.PIALERT("test")
   equal(played[#played].kind, "file")
   equal(played[#played].value, "Interface\\AddOns\\MyMedia\\pi.ogg")
+end)
+
+test("moan preset selects the WeakAuras sound path", function()
+  SlashCmdList.PIALERT("preset moan")
+  equal(PIAlertDB.sound, "custom")
+  equal(PIAlertDB.customPath, "Interface\\AddOns\\WeakAuras\\PowerAurasMedia\\Sounds\\moan.ogg")
+end)
+
+test("visual alert can be disabled without disabling the sound alert", function()
+  notices = {}
+  SlashCmdList.PIALERT("visual off")
+  auraActive = false
+  frame.onEvent(frame, "UNIT_AURA", "player")
+  auraActive = true
+  frame.onEvent(frame, "UNIT_AURA", "player")
+  equal(#notices, 0)
+  equal(played[#played].kind, "file")
+  SlashCmdList.PIALERT("visual on")
+end)
+
+test("status reports the selected custom path", function()
+  SlashCmdList.PIALERT("status")
+  local last = messages[#messages]
+  if not last:find("moan%.ogg") then
+    error("status did not include the custom sound path")
+  end
 end)
 
 io.write(string.format("\n%d integration tests, %d failures\n", tests, failures))
