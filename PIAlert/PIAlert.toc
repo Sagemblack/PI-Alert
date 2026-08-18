@@ -1,0 +1,10 @@
+## Interface: 120007
+## Title: PI Alert
+## Notes: Plays your chosen sound when you gain Power Infusion.
+## Author: Sagemblack
+## Version: 0.1.0-beta.1
+## SavedVariables: PIAlertDB
+## IconTexture: 135939
+
+Core.lua
+Addon.lua

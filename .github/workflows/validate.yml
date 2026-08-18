@@ -1,0 +1,19 @@
+name: Validate addon
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lua-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lua 5.1
+        run: sudo apt-get update && sudo apt-get install -y lua5.1
+      - name: Run Lua tests
+        run: |
+          lua tests/run.lua
+          lua tests/addon_integration.lua
+      - name: Package addon
+        run: bash scripts/package.sh
