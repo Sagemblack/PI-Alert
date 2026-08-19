@@ -151,10 +151,10 @@ end)
 
 test("options command opens the settings category when available", function()
   PIAlertCore.OpenSettings = nil
-  PIAlertCore.SettingsCategory = {}
+  PIAlertCore.SettingsCategory = { GetID = function() return 42 end }
   Settings = {
-    OpenToCategory = function(category)
-      if type(category) == "table" then
+    OpenToCategory = function(categoryID)
+      if categoryID == 42 then
         optionsOpened = true
         return true
       end

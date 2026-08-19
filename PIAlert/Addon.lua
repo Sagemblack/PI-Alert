@@ -80,18 +80,15 @@ end
 
 local function OpenSettingsPanel()
   local function open()
-    local opened = false
     if PIAlertCore.OpenSettings then
-      opened = PIAlertCore.OpenSettings()
-    end
-    if opened == false and Settings and Settings.OpenToCategory then
-      if PIAlertCore.SettingsCategory then
-        opened = Settings.OpenToCategory(PIAlertCore.SettingsCategory)
+      PIAlertCore.OpenSettings()
+    elseif Settings and Settings.OpenToCategory then
+      if PIAlertCore.SettingsCategory and PIAlertCore.SettingsCategory.GetID then
+        Settings.OpenToCategory(PIAlertCore.SettingsCategory:GetID())
       else
-        opened = Settings.OpenToCategory("PIAlert")
+        Settings.OpenToCategory("PIAlert")
       end
-    end
-    if opened == false then
+    else
       Print("Settings panel is unavailable until the WoW UI finishes loading.")
     end
   end
@@ -243,11 +240,10 @@ local function CreateSettingsPanel()
   end)
 
   local category = Settings.RegisterCanvasLayoutCategory(panel, "PI Alert")
-  category.ID = "PIAlert"
   Settings.RegisterAddOnCategory(category)
   PIAlertCore.SettingsCategory = category
   PIAlertCore.OpenSettings = function()
-    return Settings.OpenToCategory(category.ID)
+    Settings.OpenToCategory(category:GetID())
   end
 end
 

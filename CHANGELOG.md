@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+- Use the live Settings category ID instead of overwriting it with a string, allowing `/pialert options` to actually open the panel.
+
 ## 0.2.3
 
 - Defer `/pialert options` until the chat command finishes processing, preventing the chat edit box from swallowing the command.
