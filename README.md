@@ -10,7 +10,10 @@ PI Alert plays a selected sound once whenever your character gains the priest **
 - Custom `.ogg` or `.mp3` file paths
 - Selectable audio channel, with `Master` as the default
 - Optional large on-screen `POWER INFUSION` alert
-- Modern WoW Settings panel with test and WeakAuras Moan preset buttons
+- Modern WoW Settings panel with enable, visual-alert, test and WeakAuras Moan preset controls
+- Optional party/raid Power Infusion tracking, disabled by default
+- Safe visual customization settings for alert text, duration, scale, position, and color
+- `/pialert reset` and expanded `/pialert status` diagnostics
 - Lightweight and dependency-free
 
 ## Commands
@@ -28,6 +31,8 @@ PI Alert plays a selected sound once whenever your character gains the priest **
 | `/pialert channel Master` | Select an audio channel |
 | `/pialert preset moan` | Select WeakAuras' `moan.ogg` preset |
 | `/pialert visual on` / `off` | Toggle the on-screen alert |
+| `/pialert group on` / `off` | Track party/raid member Power Infusion (off by default) |
+| `/pialert reset` | Restore safe defaults |
 | `/pialert status` | Show current settings and path |
 | `/pialert options` | Open the graphical settings panel |
 | `/pialert test` | Preview the selected sound |
@@ -67,7 +72,7 @@ Restart WoW or reload the interface, then enable **PI Alert** in the AddOns menu
 
 ## Testing status
 
-The core and mocked WoW integration tests run under Lua 5.1. An in-game Retail test is still required to confirm Power Infusion aura visibility under the current combat API restrictions.
+The core and mocked WoW integration tests run under Lua 5.1. Group tracking uses `C_UnitAuras.GetAuraDataByIndex` when available and falls back to legacy `UnitAura`; an in-game Retail test is still required to confirm visibility and the exact current aura restrictions. The Settings panel exposes the safe boolean controls and preview actions; text/media editing remains available through slash commands where client UI compatibility varies.
 
 ## License
 

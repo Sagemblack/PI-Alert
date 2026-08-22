@@ -15,5 +15,6 @@ jobs:
         run: |
           lua tests/run.lua
           lua tests/addon_integration.lua
+          lua tests/settings_registration.lua
       - name: Package addon
         run: bash scripts/package.sh

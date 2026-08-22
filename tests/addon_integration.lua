@@ -24,6 +24,7 @@ local notices = {}
 local messages = {}
 local optionsOpened = false
 local timerScheduled = false
+local groupAuras = {}
 local frame = { events = {} }
 
 function frame:RegisterEvent(event)
@@ -44,6 +45,9 @@ C_UnitAuras = {
   GetPlayerAuraBySpellID = function(spellID)
     equal(spellID, 10060, "Power Infusion spell ID")
     return auraActive and { spellId = spellID } or nil
+  end,
+  GetAuraDataByIndex = function(unit, index)
+    return groupAuras[unit] and index == 1 and { spellId = 10060 } or nil
   end,
 }
 
@@ -164,6 +168,32 @@ test("options command opens the settings category when available", function()
   SlashCmdList.PIALERT("options")
   equal(timerScheduled, true)
   equal(optionsOpened, true)
+end)
+
+test("reset restores defaults and reports status", function()
+  SlashCmdList.PIALERT("group on")
+  SlashCmdList.PIALERT("reset")
+  equal(PIAlertDB.enabled, true)
+  equal(PIAlertDB.groupTracking, false)
+  equal(PIAlertDB.alertText, "POWER INFUSION")
+  SlashCmdList.PIALERT("status")
+  if not messages[#messages]:find("group=false") then
+    error("status did not include group tracking")
+  end
+end)
+
+test("group tracking detects party Power Infusion only when enabled", function()
+  local before = #played
+  SlashCmdList.PIALERT("group on")
+  groupAuras.party1 = true
+  frame.onEvent(frame, "UNIT_AURA", "party1")
+  equal(played[#played].value, SOUNDKIT.RAID_WARNING)
+  groupAuras.party1 = false
+  frame.onEvent(frame, "UNIT_AURA", "party1")
+  groupAuras.party1 = true
+  frame.onEvent(frame, "UNIT_AURA", "party1")
+  equal(#played, before + 2)
+  SlashCmdList.PIALERT("group off")
 end)
 
 io.write(string.format("\n%d integration tests, %d failures\n", tests, failures))

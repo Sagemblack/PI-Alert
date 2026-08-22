@@ -19,6 +19,7 @@ jobs:
         run: |
           lua tests/run.lua
           lua tests/addon_integration.lua
+          lua tests/settings_registration.lua
       - name: Build release ZIP
         run: bash scripts/package.sh "${GITHUB_REF_NAME#v}"
       - name: Publish GitHub release

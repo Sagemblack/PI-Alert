@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.5
+
+- Add safe configurable visual alert text, duration, scale, position, and color settings.
+- Add optional party/raid Power Infusion tracking using current `C_UnitAuras` APIs with fallbacks; disabled by default.
+- Add `/pialert group on|off` and `/pialert reset` commands.
+- Expand status diagnostics and Settings panel controls; update version metadata and documentation.
+
 ## 0.2.4
 
 - Use the live Settings category ID instead of overwriting it with a string, allowing `/pialert options` to actually open the panel.
