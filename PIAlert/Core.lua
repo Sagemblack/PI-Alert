@@ -24,6 +24,10 @@ function PIAlertCore.NormalizeSettings(saved)
   local enabled = true
   if type(saved.enabled) == "boolean" then enabled = saved.enabled end
   local text = type(saved.alertText) == "string" and saved.alertText:match("^%s*(.-)%s*$") or ""
+  local groupText = type(saved.groupAlertText) == "string" and saved.groupAlertText:match("^%s*(.-)%s*$") or ""
+  if #groupText == 0 or #groupText > 100 or not groupText:find("{name}", 1, true) then
+    groupText = "POWER INFUSION: {name}"
+  end
   local color = type(saved.visualColor) == "table" and saved.visualColor or {}
   return {
     enabled = enabled,
@@ -32,6 +36,12 @@ function PIAlertCore.NormalizeSettings(saved)
     customPath = type(saved.customPath) == "string" and saved.customPath or "",
     visual = saved.visual ~= false,
     groupTracking = saved.groupTracking == true,
+    groupTextEnabled = saved.groupTextEnabled ~= false,
+    groupSoundEnabled = saved.groupSoundEnabled ~= false,
+    groupAlertText = groupText,
+    groupSound = PIAlertCore.SoundKeys[saved.groupSound] and saved.groupSound or "readycheck",
+    groupChannel = PIAlertCore.Channels[saved.groupChannel] and saved.groupChannel or "Master",
+    groupCustomPath = type(saved.groupCustomPath) == "string" and saved.groupCustomPath or "",
     alertText = #text > 0 and #text <= 80 and text or "POWER INFUSION",
     alertDuration = type(saved.alertDuration) == "number" and saved.alertDuration >= 1 and saved.alertDuration <= 10 and saved.alertDuration or 3,
     alertScale = type(saved.alertScale) == "number" and saved.alertScale >= 0.5 and saved.alertScale <= 2 and saved.alertScale or 1,
@@ -45,6 +55,12 @@ function PIAlertCore.NormalizeSettings(saved)
       a = type(color.a) == "number" and clamp(color.a, 0, 1) or 1,
     },
   }
+end
+
+function PIAlertCore.RenderGroupAlertText(template, name)
+  template = type(template) == "string" and template or "POWER INFUSION: {name}"
+  name = type(name) == "string" and name ~= "" and name or "Unknown"
+  return (template:gsub("{name}", function() return name end))
 end
 
 function PIAlertCore.NewDetector()

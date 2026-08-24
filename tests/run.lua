@@ -97,6 +97,28 @@ test("rejects unsafe visual customization values", function()
   equal(settings.visualColor.a, 1)
 end)
 
+test("normalizes independent group alert settings and renders the recipient name", function()
+  local settings = PIAlertCore.NormalizeSettings({
+    groupTracking = true,
+    groupTextEnabled = false,
+    groupSoundEnabled = true,
+    groupAlertText = "PI ON {name}!",
+    groupSound = "alarm",
+    groupChannel = "Dialog",
+  })
+  equal(settings.groupTextEnabled, false)
+  equal(settings.groupSoundEnabled, true)
+  equal(settings.groupAlertText, "PI ON {name}!")
+  equal(settings.groupSound, "alarm")
+  equal(settings.groupChannel, "Dialog")
+  equal(PIAlertCore.RenderGroupAlertText(settings.groupAlertText, "Priestfriend"), "PI ON Priestfriend!")
+end)
+
+test("group alert template always retains a recipient placeholder", function()
+  local settings = PIAlertCore.NormalizeSettings({ groupAlertText = "Power Infusion" })
+  equal(settings.groupAlertText, "POWER INFUSION: {name}")
+end)
+
 test("group detector alerts once per unit and can be disabled", function()
   local detector = PIAlertCore.NewGroupDetector()
   equal(detector:Update("party1", true), true)

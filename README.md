@@ -12,6 +12,8 @@ PI Alert plays a selected sound once whenever your character gains the priest **
 - Optional large on-screen `POWER INFUSION` alert
 - Modern WoW Settings panel with enable, visual-alert, test and WeakAuras Moan preset controls
 - Optional party/raid Power Infusion tracking, disabled by default
+- Named group alerts with a customizable `POWER INFUSION: {name}` template
+- Independent group text and group sound toggles with a separate group sound profile
 - Safe visual customization settings for alert text, duration, scale, position, and color
 - `/pialert reset` and expanded `/pialert status` diagnostics
 - Lightweight and dependency-free
@@ -32,6 +34,9 @@ PI Alert plays a selected sound once whenever your character gains the priest **
 | `/pialert preset moan` | Select WeakAuras' `moan.ogg` preset |
 | `/pialert visual on` / `off` | Toggle the on-screen alert |
 | `/pialert group on` / `off` | Track party/raid member Power Infusion (off by default) |
+| `/pialert grouptext on` / `off` | Toggle named group alert text |
+| `/pialert groupsound on` / `off` | Toggle the separate group alert sound |
+| `/pialert grouptest` | Preview the configured group alert |
 | `/pialert reset` | Restore safe defaults |
 | `/pialert status` | Show current settings and path |
 | `/pialert options` | Open the graphical settings panel |

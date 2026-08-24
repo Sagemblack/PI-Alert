@@ -69,6 +69,11 @@ function PlaySoundFile(path, channel)
   return true
 end
 
+function UnitName(unit)
+  if unit == "party1" then return "Priestfriend" end
+  return unit
+end
+
 DEFAULT_CHAT_FRAME = { AddMessage = function(_, message) table.insert(messages, message) end }
 RaidWarningFrame = {}
 ChatTypeInfo = { RAID_WARNING = {} }
@@ -182,17 +187,43 @@ test("reset restores defaults and reports status", function()
   end
 end)
 
-test("group tracking detects party Power Infusion only when enabled", function()
+test("group tracking shows the recipient name and uses its own sound", function()
   local before = #played
+  notices = {}
   SlashCmdList.PIALERT("group on")
   groupAuras.party1 = true
   frame.onEvent(frame, "UNIT_AURA", "party1")
-  equal(played[#played].value, SOUNDKIT.RAID_WARNING)
+  equal(notices[#notices], "POWER INFUSION: Priestfriend")
+  equal(played[#played].value, SOUNDKIT.READY_CHECK)
   groupAuras.party1 = false
   frame.onEvent(frame, "UNIT_AURA", "party1")
   groupAuras.party1 = true
   frame.onEvent(frame, "UNIT_AURA", "party1")
   equal(#played, before + 2)
+  SlashCmdList.PIALERT("group off")
+end)
+
+test("group text and group sound can be disabled independently", function()
+  SlashCmdList.PIALERT("group on")
+  PIAlertDB.groupTextEnabled = false
+  PIAlertDB.groupSoundEnabled = true
+  notices = {}
+  local before = #played
+  groupAuras.party1 = false
+  frame.onEvent(frame, "UNIT_AURA", "party1")
+  groupAuras.party1 = true
+  frame.onEvent(frame, "UNIT_AURA", "party1")
+  equal(#notices, 0)
+  equal(#played, before + 1)
+
+  PIAlertDB.groupTextEnabled = true
+  PIAlertDB.groupSoundEnabled = false
+  groupAuras.party1 = false
+  frame.onEvent(frame, "UNIT_AURA", "party1")
+  groupAuras.party1 = true
+  frame.onEvent(frame, "UNIT_AURA", "party1")
+  equal(notices[#notices], "POWER INFUSION: Priestfriend")
+  equal(#played, before + 1)
   SlashCmdList.PIALERT("group off")
 end)
 

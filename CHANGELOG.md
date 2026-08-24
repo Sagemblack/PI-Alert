@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.6
+
+- Show the Power Infusion recipient's name in group alerts using a customizable `{name}` template.
+- Add independent group text and group sound toggles.
+- Add a separate group sound, audio channel, and custom sound path.
+- Add a Test Group Alert button and `/pialert grouptest` command.
+- Keep player and group Power Infusion alert profiles independent.
+
 ## 0.2.5
 
 - Add safe configurable visual alert text, duration, scale, position, and color settings.

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-VERSION="${1:-0.2.5}"
+VERSION="${1:-0.2.6}"
 DIST="$ROOT/dist"
 rm -rf "$DIST"
 mkdir -p "$DIST"
